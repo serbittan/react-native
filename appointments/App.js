@@ -1,5 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+
 import {
+  ScrollView,
   FlatList,
   View,
   StyleSheet,
@@ -20,18 +23,33 @@ const App = () => {
   const [mostrarform, setMostrarForm] = useState(false)
 
   // Definir el state de appointments.
-  const [appointments, setAppointments] = useState([
-    { id: '1', patient: 'Hook', owner: 'Pepe', symptoms: 'no duerme' },
-    { id: '2', patient: 'Redux', owner: 'Juan', symptoms: 'no duerme' },
-    { id: '3', patient: 'React', owner: 'Carmen', symptoms: 'no duerme' },
-    { id: '4', patient: 'Native', owner: 'Oscar', symptoms: 'no duerme' }
-  ])
+  const [appointments, setAppointments] = useState([])
+
+
+  useEffect(() => {
+    // traer el asyncStorage al cargar componente.
+    const getAppointmentsStorage = async () => {
+      try {
+        const appointmentsStorage = await AsyncStorage.getItem('appointments')
+
+        appointmentsStorage ? setAppointments(JSON.parse(appointmentsStorage)) : null 
+
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    getAppointmentsStorage()
+
+  }, []);
+
 
   // Eliminar pacientes del state.
   const handleDialogoEliminar = id => {
-    setAppointments((appointments) => {
-      return appointments.filter(appointment => appointment.id !== id)
-    })
+    const filteredAppointments = appointments.filter(appointment => appointment.id !== id)
+
+    setAppointments(filteredAppointments)
+    // Eliminar el AsyncStorage.(guardando en su lugar las citas filtradas).
+    setDataAppointments(JSON.stringify(filteredAppointments))
   }
 
   // Función que muestra u oculta formulario/citas.
@@ -44,16 +62,27 @@ const App = () => {
     Keyboard.dismiss()
   }
 
+  // Function para guardar las citas el asyncStorage.
+  const setDataAppointments = async (appointmentsJSON) => {
+    try {
+      await AsyncStorage.setItem('appointments', appointmentsJSON)
+      console.log(appointmentsJSON)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  
 
   return (
 
     <TouchableWithoutFeedback onPress={() => hideKeyboard()}>
-      <View style={styles.contenedor}>
+      <ScrollView style={styles.contenedor}>
 
         <Text style={styles.title}>Appointment Manager</Text>
 
         <TouchableHighlight onPress={() => showForm()} style={styles.btnshowform}>
-          <Text style={styles.btntextform}>{mostrarform ? 'Cancel Appointment': 'Create Appointment'}</Text>
+          <Text style={styles.btntextform}>{mostrarform ? 'Cancel Appointment' : 'Create Appointment'}</Text>
         </TouchableHighlight>
 
 
@@ -62,7 +91,7 @@ const App = () => {
           {mostrarform ? (
             <>
               <Text style={styles.title}>Create New Appointment</Text>
-              <Form appointments={appointments} setAppointments={setAppointments} showForm={showForm} />
+              <Form appointments={appointments} setAppointments={setAppointments} showForm={showForm} setDataAppointments={setDataAppointments} />
             </>
           ) : (
               <>
@@ -80,7 +109,7 @@ const App = () => {
 
         </View>
 
-      </View>
+      </ScrollView>
     </TouchableWithoutFeedback>
 
   )
