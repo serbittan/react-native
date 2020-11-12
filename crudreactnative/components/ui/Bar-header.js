@@ -1,18 +1,21 @@
 import React from 'react'
-import { } from 'react-native'
+import { StyleSheet } from 'react-native'
 import { Button } from 'react-native-paper'
 
-const BarHeader = () => {
+const BarHeader = ({ navigation }) => {
+
     const handlePress = () => {
-        console.log('agregando...')
+        navigation.navigate('NewClient')
     }
-    
+
     return (
-        <Button
-            onPress={() => handlePress()}
-            icon="">
-            New Client</Button>
+        <Button onPress={() => handlePress()} icon="plus-circle" color="white">
+            New Client
+        </Button>
     )
 }
 
+const styles = StyleSheet.create({
+    
+})
 export default BarHeader

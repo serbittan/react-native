@@ -13,7 +13,7 @@ import BarHeader from './components/ui/Bar-header'
 
 
 const Stack = createStackNavigator()
-
+console.log(Stack)
 // customizamos algunas propiedades de color.
 const theme = {
   ...DefaultTheme,
@@ -23,8 +23,10 @@ const theme = {
     accent: '#0655bf'
   }
 }
+console.log(theme.colors)
 
 const App = () => {
+    
   return (
     <>
       <PaperProvider>
@@ -36,9 +38,16 @@ const App = () => {
               headerTintColor: theme.colors.surface,
               headerTitleStyle: { fontSize: 20, textTransform: 'uppercase', fontWeight: 'bold' }
             }} >
-            <Stack.Screen name="Home" component={HomeScreen} option={{}}/>
-            <Stack.Screen name="NewClient" component={NewClientScreen} options={{ title: 'New Client' }}/>
-            <Stack.Screen name="DetailClient" component={DetailClientScreen} options={{ title: 'Detail Client' }}/>
+            <Stack.Screen
+              name="Home"
+              component={HomeScreen}
+              options={({ navigation }) => ({
+                //callback.
+                headerLeft: props => (<BarHeader {...props} navigation={navigation} />)
+              })} />
+
+            <Stack.Screen name="NewClient" component={NewClientScreen} options={{ title: 'New Client' }} />
+            <Stack.Screen name="DetailClient" component={DetailClientScreen} options={{ title: 'Detail Client' }} />
           </Stack.Navigator>
         </NavigationContainer>
       </PaperProvider>
