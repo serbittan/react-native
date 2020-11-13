@@ -41,10 +41,12 @@ const App = () => {
             <Stack.Screen
               name="Home"
               component={HomeScreen}
-              options={({ navigation }) => ({
-                //callback.
-                headerLeft: props => (<BarHeader {...props} navigation={navigation} />)
-              })} />
+              // (lo siguiente se comenta cuando creamos un botton nuevo y eliminamos este del barHeader)
+              // options={({ navigation }) => ({
+              //   //callback.
+              //   headerLeft: props => (<BarHeader {...props} navigation={navigation} />)
+              // })} 
+              />
 
             <Stack.Screen name="NewClient" component={NewClientScreen} options={{ title: 'New Client' }} />
             <Stack.Screen name="DetailClient" component={DetailClientScreen} options={{ title: 'Detail Client' }} />

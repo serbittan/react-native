@@ -1,13 +1,13 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { View, StyleSheet } from 'react-native'
 import { Headline, TextInput, Button, Paragraph, Dialog, Portal } from 'react-native-paper'
 import globalStyles from '../styles/global-styles'
 
-import { setClientApi } from '../logic'
+import { setClientApi, updateClient } from '../logic'
 
 
 
-const NewClientScreen = ({ navigation }) => {
+const NewClientScreen = ({ route, navigation }) => {
     // State local.
     const [name, setname] = useState('')
     const [phone, setphone] = useState('')
@@ -15,29 +15,74 @@ const NewClientScreen = ({ navigation }) => {
     const [company, setcompany] = useState('')
 
     // State para alert.
-    const [alert, setalert] = useState(false);
+    const [alert, setalert] = useState(false)
+
+    // Extraer la función del State api que viene por route.
+    const { setapicall, client } = route.params
+
+    // Detectar si estamos editando o creando.
+    useEffect(() => {
+        if (route.params.client) {
+            const { params: { client: { name, phone, email, company } } } = route
+
+            setname(name)
+            setphone(phone),
+                setemail(email)
+            setcompany(company)
+        }
+
+    }, [client])
 
     // Enviar form a la api.
     const onSetApi = () => {
+        if (!name.trim() || !phone.trim() || !email.trim() || !company.trim()) {
+            setalert(true)
+            return
+        }
         // creamos el obj client.
-        (async () => {
-            const client = { name, phone, email, company }
-            try {
-                await setClientApi(client)
+        let client = { name, phone, email, company }
 
-                // redireccionamos a home.
-                navigation.navigate('Home')
+        // si editamos:
+        if (route.params.client) {
+            (async () => {
+                try {
+                    const { id } = route.params.client
+                    client.id = id
+                    await updateClient(client)
 
-            } catch (error) {
-                if (error.message === 'all fields are required') {
-                    setalert(true)
-
-                } else {
+                } catch (error) {
                     console.log(error)
                 }
-                return
-            }
-        })()
+
+            })()
+
+        } else {
+            (async () => {
+                try {
+                    await setClientApi(client)
+
+                } catch (error) {
+
+                    // if (error.message === 'all fields are required') {
+                    //     console.log(error.message)
+                    // setalert(true)
+
+                    // } else {
+                    //     console.log('aqui')
+                    //     console.log(error)
+                    // }
+
+                    // return
+                }
+
+            })()
+
+        }
+        // redireccionamos a home.
+        navigation.navigate('Home')
+
+        // pasamos el State de api a true para que recarge de nuevo al redireccionar.
+        setapicall(true)
 
     }
 
@@ -45,8 +90,9 @@ const NewClientScreen = ({ navigation }) => {
 
         <View style={globalStyles.container}>
 
-            <Headline style={globalStyles.title}>New Client</Headline>
+            <Headline style={globalStyles.title}>{route.params.client ? "Edit Client" : "New Client"}</Headline>
             <TextInput
+                autoFocus
                 selectionColor="#fff"
                 style={styles.input}
                 mode="outlined"
@@ -55,6 +101,7 @@ const NewClientScreen = ({ navigation }) => {
                 onChangeText={text => setname(text)}
                 value={name} />
             <TextInput
+                keyboardType="phone-pad"
                 style={styles.input}
                 mode="outlined"
                 label="Phone"
@@ -62,6 +109,7 @@ const NewClientScreen = ({ navigation }) => {
                 onChangeText={text => setphone(text)}
                 value={phone} />
             <TextInput
+                keyboardType="email-address"
                 style={styles.input}
                 mode="outlined"
                 label="Email"
@@ -80,14 +128,14 @@ const NewClientScreen = ({ navigation }) => {
                 icon="pencil"
                 onPress={() => onSetApi()}
             >
-                Add New Client
-                </Button>
+                {route.params.client ? "Edit Client" : "Add New Client"}
+            </Button>
             <View>
                 <Portal>
                     <Dialog visible={alert} onDismiss={() => setalert(false)}>
                         <Dialog.Title>Error</Dialog.Title>
                         <Dialog.Content>
-                            <Paragraph>All fields are required!!</Paragraph>
+                            <Paragraph>All fields are required!</Paragraph>
                         </Dialog.Content>
                         <Dialog.Actions>
                             <Button onPress={() => setalert(false)}>OK</Button>
