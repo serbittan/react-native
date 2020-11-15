@@ -1,6 +1,6 @@
 import 'react-native-gesture-handler'
 import React from 'react'
-import { StyleSheet, View, Text } from 'react-native'
+import { Keyboard, StyleSheet, TouchableWithoutFeedback } from 'react-native'
 
 import { NavigationContainer } from '@react-navigation/native'
 import { createStackNavigator } from '@react-navigation/stack'
@@ -9,7 +9,7 @@ import { createStackNavigator } from '@react-navigation/stack'
 import { DefaultTheme, Provider as PaperProvider } from 'react-native-paper'
 
 import { HomeScreen, NewClientScreen, DetailClientScreen } from './view'
-import BarHeader from './components/ui/Bar-header'
+// import BarHeader from './components/ui/Bar-header'
 
 
 const Stack = createStackNavigator()
@@ -23,10 +23,10 @@ const theme = {
     accent: '#0655bf'
   }
 }
-console.log(theme.colors)
+
 
 const App = () => {
-    
+
   return (
     <>
       <PaperProvider>
@@ -41,12 +41,12 @@ const App = () => {
             <Stack.Screen
               name="Home"
               component={HomeScreen}
-              // (lo siguiente se comenta cuando creamos un botton nuevo y eliminamos este del barHeader)
-              // options={({ navigation }) => ({
-              //   //callback.
-              //   headerLeft: props => (<BarHeader {...props} navigation={navigation} />)
-              // })} 
-              />
+            // (lo siguiente se comenta cuando creamos un botton nuevo y eliminamos este del barHeader)
+            // options={({ navigation }) => ({
+            //   //callback.
+            //   headerLeft: props => (<BarHeader {...props} navigation={navigation} />)
+            // })} 
+            />
 
             <Stack.Screen name="NewClient" component={NewClientScreen} options={{ title: 'New Client' }} />
             <Stack.Screen name="DetailClient" component={DetailClientScreen} options={{ title: 'Detail Client' }} />
