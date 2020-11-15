@@ -1,0 +1,6 @@
+module Pods_crudreactnative_crudreactnativeTests {
+  umbrella header "Pods-crudreactnative-crudreactnativeTests-umbrella.h"
+
+  export *
+  module * { export * }
+}

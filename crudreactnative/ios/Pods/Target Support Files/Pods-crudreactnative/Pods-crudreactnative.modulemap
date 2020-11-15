@@ -1,0 +1,6 @@
+module Pods_crudreactnative {
+  umbrella header "Pods-crudreactnative-umbrella.h"
+
+  export *
+  module * { export * }
+}
